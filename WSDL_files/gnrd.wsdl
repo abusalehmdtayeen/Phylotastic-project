@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   targetNamespace="http://axis2.apache.org"
+   xmlns:tns="http://axis2.apache.org"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+     This is a WSDL 2.0 description of a Global Names Recognition and Discovery service
+     for finding scientific names on web pages, PDFs, Microsoft Office documents, images.
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      targetNamespace="http://axis2.apache.org" elementFormDefault="qualified" attributeFormDefault="qualified">
+		<xs:element name="url" nillable="false" type="xs:string"/>
+		<xs:element name="text" nillable="false" type="xs:string"/>
+		<xs:element name="GNRD_Result" nillable="true" type="xs:string"/>	
+	</xs:schema>
+  </wsdl:types>
+
+  <wsdl:interface name="GNRDInterface">
+    
+	<wsdl:operation name="findScientificNamesWithURL" 
+	   pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:documentation>
+         This operation returns a list of ScientificNames found on a web page, PDF, Microsoft Office document, or image file url.
+      </wsdl:documentation>
+      <wsdl:input element="tns:url" wsaw:Action="urn:url"/>
+      <wsdl:output element="tns:GNRD_Result" wsaw:Action="urn:GNRD_Result"/>
+    </wsdl:operation>
+	
+	<wsdl:operation name="findScientificNamesWithText" 
+	   pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:documentation>
+         This operation returns a list of ScientificNames found on a text supplied as input.
+      </wsdl:documentation>
+      <wsdl:input element="tns:text" wsaw:Action="urn:text"/>
+      <wsdl:output element="tns:GNRD_Result" wsaw:Action="urn:GNRD_Result"/>
+    </wsdl:operation>
+
+  </wsdl:interface>
+
+  <wsdl:binding name="GNRDHTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="tns:GNRDInterface">
+    <wsdl:documentation>
+       The RESTful HTTP binding for the Global Names Recognition and Discovery service.
+    </wsdl:documentation>
+    
+	<wsdl:operation ref="tns:findScientificNamesWithURL" whttp:method="GET" whttp:location="name_finder.json"
+	whttp:contentEncodingDefault="application/x-www-form-urlencoded" whttp:inputSerialization="application/x-www-form-urlencoded" whttp:outputSerialization="application/json" whttp:queryParameterSeparator=""/>
+	
+	<wsdl:operation ref="tns:findScientificNamesWithText" whttp:method="GET" whttp:location="name_finder.json"
+	whttp:contentEncodingDefault="application/x-www-form-urlencoded" whttp:inputSerialization="application/x-www-form-urlencoded" whttp:outputSerialization="application/json" whttp:queryParameterSeparator=""/>
+  </wsdl:binding>
+
+  <wsdl:service name="GNRD" interface="tns:GNRDInterface">
+    <wsdl:documentation>
+       Global Names Recognition and Discovery service.
+    </wsdl:documentation>
+    <wsdl:endpoint name="GNRDHTTPEndpoint"
+       binding="tns:GNRDHTTPBinding"
+       address="http://gnrd.globalnames.org/">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>

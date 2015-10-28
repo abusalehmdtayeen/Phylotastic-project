@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   targetNamespace="http://axis2.apache.org"
+   xmlns:tns="http://axis2.apache.org"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+     This is a WSDL 2.0 description of an auxiliary service to Global Names Recognition and Discovery service
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      targetNamespace="http://axis2.apache.org" elementFormDefault="qualified" attributeFormDefault="qualified">
+		<xs:element name="token" nillable="false" type="xs:string"/>
+		<xs:element name="GNRDaux_Result" nillable="true" type="xs:string"/>	
+	</xs:schema>
+  </wsdl:types>
+
+  <wsdl:interface name="GNRDauxInterface">
+    <wsdl:operation name="getScientificNames" 
+	   pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:documentation>
+         This operation returns a list of ScientificNames found on a web page, PDF, Microsoft Office document, or image file.
+      </wsdl:documentation>
+      <wsdl:input element="tns:token" wsaw:Action="urn:token"/>
+      <wsdl:output element="tns:GNRDaux_Result" wsaw:Action="urn:GNRDaux_Result"/>
+    </wsdl:operation>
+  </wsdl:interface>
+
+  <wsdl:binding name="GNRDauxHTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="tns:GNRDauxInterface">
+    <wsdl:documentation>
+       The RESTful HTTP binding for the auxiliary service.
+    </wsdl:documentation>
+    <wsdl:operation ref="tns:getScientificNames" whttp:method="GET" whttp:location="name_finder.json"
+	whttp:contentEncodingDefault="application/x-www-form-urlencoded" whttp:inputSerialization="application/x-www-form-urlencoded" whttp:outputSerialization="application/json" whttp:queryParameterSeparator=""/>
+  </wsdl:binding>
+
+  <wsdl:service name="GNRDAUX" interface="tns:GNRDauxInterface">
+    <wsdl:documentation>
+       Auxiliary service to the Global Names Recognition and Discovery service.
+    </wsdl:documentation>
+    <wsdl:endpoint name="GNRDauxHTTPEndpoint"
+       binding="tns:GNRDauxHTTPBinding"
+       address="http://gnrd.globalnames.org/">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>

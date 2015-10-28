@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   targetNamespace="http://axis2.apache.org"
+   xmlns:tns="http://axis2.apache.org"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+     This is a WSDL 2.0 description of a Taxonomic Name Resolution service which resolves lists of scientific names against known sources. 
+	 This service parses incoming names, executes exact or fuzzy matching as required, and displays a confidence score for each match along with its identifier. 
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      targetNamespace="http://axis2.apache.org" elementFormDefault="qualified" attributeFormDefault="qualified">
+		<xs:element name="names" nillable="false" type="xs:string"/>
+		<xs:element name="best_match_only" nillable="false" type="xs:boolean"/>
+		<xs:element name="GNR_Result" nillable="true" type="xs:string"/>	
+	</xs:schema>
+  </wsdl:types>
+
+  <wsdl:interface name="GNRInterface">
+    <wsdl:operation name="resolveScientificNames" 
+	   pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:documentation>
+         This operation receives a list of names and resolves each against the entire resolver database or against specific data sources.
+      </wsdl:documentation>
+      <wsdl:input element="tns:names" wsaw:Action="urn:names"/>
+	  <wsdl:input element="tns:best_match_only" wsaw:Action="urn:best_match_only"/>
+      <wsdl:output element="tns:GNR_Result" wsaw:Action="urn:GNR_Result"/>
+    </wsdl:operation>
+  </wsdl:interface>
+
+  <wsdl:binding name="GNRHTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="tns:GNRInterface">
+    <wsdl:documentation>
+       The RESTful HTTP binding for the Global Names Resolver service.
+    </wsdl:documentation>
+    <wsdl:operation ref="tns:resolveScientificNames" whttp:method="GET" whttp:location="name_resolvers.json"
+	whttp:contentEncodingDefault="application/x-www-form-urlencoded" whttp:inputSerialization="application/x-www-form-urlencoded" whttp:outputSerialization="application/json" whttp:queryParameterSeparator=""/>
+  </wsdl:binding>
+
+  <wsdl:service name="GNR" interface="tns:GNRInterface">
+    <wsdl:documentation>
+       Global Names Resolver service.
+    </wsdl:documentation>
+    <wsdl:endpoint name="GNRHTTPEndpoint"
+       binding="tns:GNRHTTPBinding"
+       address="http://resolver.globalnames.org/">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>

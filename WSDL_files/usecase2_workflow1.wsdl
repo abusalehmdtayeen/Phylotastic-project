@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   targetNamespace="http://axis2.apache.org"
+   xmlns:tns="http://axis2.apache.org"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+     This is a WSDL 2.0 description of the workflow of UseCase2
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      targetNamespace="http://axis2.apache.org" elementFormDefault="qualified" attributeFormDefault="qualified">
+		<xs:element name="url" nillable="false" type="xs:string"/>
+		<xs:element name="Usecase2Workflow1_Result" nillable="true" type="xs:string"/>	
+	</xs:schema>
+  </wsdl:types>
+
+  <wsdl:interface name="Usecase2Workflow1Interface">
+    <wsdl:operation name="getPhylogeneticTree" 
+	   pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:documentation>
+         This operation returns a phylogenetic tree from the scientific names extracted from a webpage.
+      </wsdl:documentation>
+      <wsdl:input element="tns:url" wsaw:Action="urn:url"/>
+      <wsdl:output element="tns:Usecase2Workflow1_Result" wsaw:Action="urn:Usecase2Workflow1_Result"/>
+    </wsdl:operation>
+  </wsdl:interface>
+
+  <wsdl:binding name="Usecase2Workflow1HTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="tns:Usecase2Workflow1Interface">
+    <wsdl:documentation>
+       The RESTful HTTP binding for the Usecase2Workflow1 service.
+    </wsdl:documentation>
+    <wsdl:operation ref="tns:getPhylogeneticTree" whttp:method="POST" whttp:location="work_flow_1"
+	whttp:contentEncodingDefault="application/x-www-form-urlencoded" whttp:inputSerialization="application/x-www-form-urlencoded" whttp:outputSerialization="application/json" whttp:queryParameterSeparator=""/>
+  </wsdl:binding>
+
+  <wsdl:service name="Usecase2Workflow1" interface="tns:Usecase2Workflow1Interface">
+    <wsdl:documentation>
+       Usecase2Workflow1
+    </wsdl:documentation>
+    <wsdl:endpoint name="Usecase2Workflow1HTTPEndpoint"
+       binding="tns:Usecase2Workflow1HTTPBinding"
+       address="http://128.123.177.21:5002/phylotastic_ws/generateTreesFromWebPages/">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>
