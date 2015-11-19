@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:description xmlns:wsdl="http://www.w3.org/ns/wsdl"
+   targetNamespace="http://axis2.apache.org"
+   xmlns:tns="http://axis2.apache.org"
+   xmlns:whttp="http://www.w3.org/ns/wsdl/http"
+   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+   xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+     This is a WSDL 2.0 description of the API to Treebase, a phylogenetic information repository. 
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      targetNamespace="http://axis2.apache.org" elementFormDefault="qualified" attributeFormDefault="qualified">
+		<xs:element name="taxon" nillable="false" type="xs:string"/>
+		<xs:element name="treebase_Result" nillable="true" type="xs:string"/>	
+	</xs:schema>
+  </wsdl:types>
+
+  <wsdl:interface name="TreebaseAPI_Interface">
+    <wsdl:operation name="getTreebaseTree" 
+	   pattern="http://www.w3.org/ns/wsdl/in-out"
+       style="http://www.w3.org/ns/wsdl/style/iri" 
+       wsdlx:safe="true">
+      <wsdl:documentation>
+         This operation returns a phylogenetic tree of a species (scientific name) from Treebase repository.
+      </wsdl:documentation>
+      <wsdl:input element="tns:taxon" wsaw:Action="urn:taxon"/>
+      <wsdl:output element="tns:treebase_Result" wsaw:Action="urn:treebase_Result"/>
+    </wsdl:operation>
+  </wsdl:interface>
+
+  <wsdl:binding name="TreebaseAPI_HTTPBinding"
+     type="http://www.w3.org/ns/wsdl/http"
+     interface="tns:TreebaseAPI_Interface">
+    <wsdl:documentation>
+       The RESTful HTTP binding for the TreebaseAPI service.
+    </wsdl:documentation>
+    <wsdl:operation ref="tns:getTreebaseTree" whttp:method="POST" whttp:location="run"
+	whttp:contentEncodingDefault="application/x-www-form-urlencoded" whttp:inputSerialization="application/x-www-form-urlencoded" whttp:outputSerialization="application/json" whttp:queryParameterSeparator=""/>
+  </wsdl:binding>
+
+  <wsdl:service name="TreebaseAPI" interface="tns:TreebaseAPI_Interface">
+    <wsdl:documentation>
+       TreebaseAPI service
+    </wsdl:documentation>
+    <wsdl:endpoint name="TreebaseAPI_HTTPEndpoint"
+       binding="tns:TreebaseAPI_HTTPBinding"
+       address="http://128.123.177.21:5002/phylotastic_ws/treebase_api/">
+    </wsdl:endpoint>
+  </wsdl:service>
+</wsdl:description>
