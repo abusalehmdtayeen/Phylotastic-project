@@ -8,7 +8,6 @@ notifications:
   email:
     recipients:
       - mdtayeen@yahoo.com
-      - abusalehmdtayeen@gmail.com
     on_success: change
     on_failure: always
 script:

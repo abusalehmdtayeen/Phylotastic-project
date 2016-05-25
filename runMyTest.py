@@ -1,10 +1,11 @@
-import json
+import Mytest
 
 print "Hello!"
 
-if 6%2 == 1:
+if 6%2 == 0:
 	print "Success"
-	#exit(0)
+	print get_filepaths("MyTestCases")
+ 	exit(0)
 else:
 	print "Failure"	
 	exit(1)
