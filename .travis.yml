@@ -4,6 +4,13 @@ python:
 cache: pip
 install:
   - pip install requests
+notifications:
+  email:
+    recipients:
+      - mdtayeen@yahoo.com
+      - abusalehmdtayeen@gmail.com
+    on_success: change
+    on_failure: always
 script:
   - python runMyTest.py
 
