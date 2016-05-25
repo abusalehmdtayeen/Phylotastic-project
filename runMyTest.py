@@ -2,7 +2,7 @@ import json
 
 print "Hello!"
 
-if 6%2 == 0:
+if 6%2 == 1:
 	print "Success"
 	#exit(0)
 else:
