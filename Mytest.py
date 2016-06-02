@@ -15,6 +15,9 @@ def get_filepaths(directory):
             # Join the two strings in order to form the full filepath.
             filepath = os.path.join(root, filename)
             file_paths.append(filepath)  # Add it to the list.
+    for filename in file_paths:
+    	if '~' in filename:
+    		file_paths.remove(filename)  
 
     return file_paths  # Self-explanatory.
 
