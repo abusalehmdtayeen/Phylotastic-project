@@ -11,5 +11,5 @@ notifications:
     on_success: change
     on_failure: always
 script:
-  - python runMyTest.py
+  - python -m unittest discover -s tests -p '*test_.py' --verbose
 
