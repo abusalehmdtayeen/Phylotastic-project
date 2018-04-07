@@ -4,6 +4,8 @@ python:
 cache: pip
 install:
   - pip install requests
+  - pip install unittest
+  - pip install json
 notifications:
   email:
     recipients:
