@@ -15,7 +15,7 @@ anticipated_content_type = 'application/json'
 services_registry = {}    # url -> Service
 requests_registry = {}    # label -> Request
 
-def get_service(group, specific_path):
+def get_service(group, service_name, specific_path):
     """Retrieve or create a Service object for a single URL.
     'group' is actually a port number (5004 etc.).
     'specific_path' is the part of the path in the URL
@@ -23,10 +23,10 @@ def get_service(group, specific_path):
     'fn/names_url'. """
 
     url = str('http://phylo.cs.nmsu.edu:%s/phylotastic_ws/%s' % (group, specific_path))
-    #url = str('%s/phylotastic_ws/%s' % (group, specific_path))
+    
     if url in services_registry:
         return services_registry[url]
-    service = Service(url)
+    service = Service(url, service_name)
     services_registry[url] = service
     return service
 
@@ -35,16 +35,17 @@ def parse_service_url(url):
     (See the get_service function.)"""
 
     parts = url.split('/phylotastic_ws/')
-    return parts[0], parts[1]    
-    #return (parts[0].split(':')[1], parts[1])
+    #return parts[0], parts[1]    
+    return (parts[0].split(':')[1], parts[1])
 
 def get_request(label):
     """Retrieve an existing Request object having the given label."""
     return requests_registry.get(str(label))
 
 class Service():
-    def __init__(self, url):
+    def __init__(self, url, name):
         self.url = url
+        self.name = name
         self.requests = {}  # maps (method, parameters) to Request
 
     def get_request(self, method='GET', parameters={},
@@ -170,9 +171,6 @@ class Exchange():
             self.content_type = ct
             if ct == 'application/json':
                 self.the_json = response.json()
-                # I expected the status code to be 4xx.
-                # Instead, there's a 200 response, with a status_code
-                # key in the JSON dict whose value is 400.
                 if self.status_code == 200 and u'status_code' in self.the_json:
                     self.status_code = self.the_json[u'status_code']
 
@@ -244,16 +242,8 @@ class WebappTestCase(unittest.TestCase):
         j = x.json()
         self.assertTrue(u'message' in j)
         self.assertEqual(j[u'message'], u'Success')
-        # These were missing when I tried tnrs/ot/resolve on 10/25
-        #self.assertTrue(u'execution_time' in j)
-        #self.assertTrue(u'creation_time' in j)
-
-    # Somehow check:
-    #  Informative message:
-    #   when service is down --
-    #   when malformed input is provided --
-    #  Expected response time: 3s~10s
-
+        
+    
     def assert_response_status(self, x, code, message=None):
         if message == None:
             message = '%s %s' % (x.status_code, x.json().get(u'message'))
@@ -261,15 +251,7 @@ class WebappTestCase(unittest.TestCase):
             self.assertEqual(x.content_type, u'application/json', message)
         self.assertEqual(x.status_code, code, message)
 
-    def regression_test_service(self): # unused
-        """General method for doing regression tests, inherited by all
-        the service-specific 'Test...' classes."""
-
-        service = self.__class__.get_service()
-        #print '\n# Regression testing:', service.url
-        for request in service.requests.values():
-            start_request_tests(request)
-
+    
     def start_request_tests(self, request):
         present = request.exchange()
         if len(request.exchanges) > 0:
@@ -317,8 +299,10 @@ class WebappTestCase(unittest.TestCase):
             for x in r.exchanges:
                 if x.status_code == 200 and x.time > maxtime:
                     maxtime = x.time
-        if maxtime > 0:
-            print >>sys.stderr, '\nSlowest exchange for %s: %s' % (service.url, maxtime)
+        #if maxtime > 0:
+        #   print >>sys.stderr, '\nSlowest exchange for %s: %s' % (service.url, maxtime)
+        print >>sys.stderr, '\nFinished testing for %s service.'%service.name
+        print >>sys.stderr, '\n==============================================='
 
     def user_credentials(self):
         expires = config('access_token_expires')
@@ -327,66 +311,6 @@ class WebappTestCase(unittest.TestCase):
         else:
             raise unittest.SkipTest("access token expired")
 
-'''
-def write_requests(requests):
-    """Write list of requests (read from documentation) to a file"""
-
-    json.dump({'requests': [r.to_dict() for r in requests]},
-              sys.stdout, indent=2, sort_keys=True)
-
-def read_requests(inpath):
-    """Read list of requests back in from file"""
-
-    with open(inpath, 'r') as infile:
-        j = json.load(infile)
-        answer = [to_request(blob) for blob in j[u'requests']]
-        print >>sys.stderr, 'Read %s requests from %s' % (len(requests_registry), inpath)
-        return answer
-
-def run_examples(requests):
-    """Having read (or parsed) some examples, execute them"""
-
-    exchanges = []
-    i = 0
-    for request in requests:
-        if True:    #i % 17 == 3: for debugging
-            print >>sys.stderr, request.stringify()
-            exchange = request.exchange()
-            if request.expect_status != None:
-                if exchange.status_code != request.expect_status:
-                    print >>sys.stderr, ('** Status code %s not what was expected (%s)' %
-                                         (exchange.status_code, request.expect_status))
-                    print >>sys.stderr, '   for', request.stringify()
-            exchanges.append(exchange)
-            time.sleep(1)
-        i += 1
-    print >>sys.stderr, i
-    return exchanges
-
-
-def read_exchanges(inpath):
-    """Load exchanges that were previously executed and dumped to a file
-    N.b. creating Exchange also stashes the request,
-    for regression testing or whatever"""
-
-    exchanges = []
-    if not os.path.exists(inpath):
-        print >>sys.stderr, 'No exhanges file:', inpath
-        return []
-    with open(inpath, 'r') as infile:
-        j = json.load(infile)
-        for blob in j[u'exchanges']:
-            x = to_exchange(blob)
-            if x != None:
-                exchanges.append(x)
-    print >>sys.stderr, 'Read %s exchanges from %s' % (len(exchanges), inpath)
-    return exchanges
-
-def write_exchanges(exchanges, outfile):
-    """Write exchanges to file (or stdout)"""
-
-    json.dump({'exchanges': [x.to_dict() for x in exchanges]},
-              outfile, indent=2, sort_keys=True)
 
 def find_resource(path):
     """Find a resource file on sys.path"""
@@ -398,6 +322,7 @@ def find_resource(path):
     print >>sys.stderr, 'No such resource:', path
     return None
 
+'''
 the_configuration = None
 
 def config(param):
@@ -413,22 +338,9 @@ def config(param):
         print >>sys.stderr, 'No such configuration parameter:', param
     return the_configuration.get(param)
 '''
+
 def main():
     """Main function for use by test_ files"""
 
-    #read_requests('work/requests.json')
-    #read_exchanges('work/exchanges.json')
     unittest.main()
-
-
-# Default action from command line is to generate baseline
-# exchanges for later regression checks.
-
-if __name__ == '__main__':
-    inpath = sys.argv[1]  #'work/requests.json'
-    outpath = sys.argv[2] #'work/exchanges.json'
-    the_requests = read_requests(inpath)
-    # Get a baseline for future regression tests
-    the_exchanges = run_examples(the_requests)
-    with open(outpath, 'w') as outfile:
-        write_exchanges(the_exchanges, outfile)
+    
