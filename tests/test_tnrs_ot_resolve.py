@@ -1,4 +1,4 @@
-# 3. tnrs/ot/resolve
+# tnrs/ot/resolve
 # GET
 
 import sys, os, unittest, json

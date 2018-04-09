@@ -1,4 +1,4 @@
-# 3 (continued). tnrs/ot/names
+# tnrs/ot/names
 
 import sys, unittest, json
 sys.path.append('./')
