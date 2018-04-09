@@ -96,8 +96,9 @@ class TestFnNamesUrl(webapp.WebappTestCase):
 
         x = self.start_request_tests(example_1)
         self.assert_success(x)
-        # Insert: whether result is what it should be according to docs
+        # Check whether the number of names in the result is more than the minimum expected
         self.assertTrue(len(x.json()[u'scientificNames']) > 20)
+        # Check whether result is what it should be according to docs
         self.assertTrue(u'Odontomachus bauri' in x.json()[u'scientificNames'])
 
     def test_example_2(self):
@@ -105,8 +106,9 @@ class TestFnNamesUrl(webapp.WebappTestCase):
 
         x = self.start_request_tests(example_2)
         self.assert_success(x)
-        # Insert: whether result is what it should be according to docs
+        # Check whether the number of names in the result is more than the minimum expected
         self.assertTrue(len(x.json()[u'scientificNames']) > 5)
+        # Check whether result is what it should be according to docs
         self.assertTrue(u'Patagioenas inornata' in x.json()[u'scientificNames'])
 
     def test_example_3(self):
@@ -114,8 +116,9 @@ class TestFnNamesUrl(webapp.WebappTestCase):
 
         x = self.start_request_tests(example_3)
         self.assert_success(x)
-        # Insert: whether result is what it should be according to docs
+        # Check whether the number of names in the result is more than the minimum expected
         self.assertTrue(len(x.json()[u'scientificNames']) > 20)
+        # Check whether result is what it should be according to docs
         self.assertTrue(u'Lolium perenne' in x.json()[u'scientificNames'])
 
 null=None; false=False; true=True

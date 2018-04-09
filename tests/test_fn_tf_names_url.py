@@ -1,4 +1,4 @@
-# 1. fn/names_url
+# 3. fn/tf/names_url
 
 import sys, unittest, json
 sys.path.append('./')
@@ -81,16 +81,15 @@ class TestFnNamesUrl(webapp.WebappTestCase):
 
         x = self.start_request_tests(example_1)
         self.assert_success(x)
-        # Insert: whether result is what it should be according to docs
         self.assertTrue(len(x.json()[u'scientificNames']) > 20)
         self.assertTrue(u'Camponotus sericeus' in x.json()[u'scientificNames'])
+
 
     def test_example_2(self):
         """Test example_2 from the documentation."""
 
         x = self.start_request_tests(example_2)
         self.assert_success(x)
-        # Insert: whether result is what it should be according to docs
         self.assertTrue(len(x.json()[u'scientificNames']) > 5)
         self.assertTrue(u'Macaca sinica' in x.json()[u'scientificNames'])
 

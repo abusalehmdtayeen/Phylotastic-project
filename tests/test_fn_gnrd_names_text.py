@@ -30,7 +30,6 @@ class TestFnNamesText(webapp.WebappTestCase):
         x = self.start_request_tests(request)
         self.assertTrue(x.status_code >= 400)
         self.assertTrue('Missing parameter "text" in "%s"' % x.json()[u'message'])
-        #self.assertTrue(u'text' in x.json()[u'message'],'error message from service is not informative: %s' % x.json()[u'message'])
 
     def test_edge_case(self):
         """Test edge case: parameter name 'text' is supplied, but there is no value.
@@ -53,7 +52,9 @@ class TestFnNamesText(webapp.WebappTestCase):
         request = service.get_request('GET', {u'text': get_sample()[0:30000]})
         x = self.start_request_tests(request)
         self.assert_success(x)
+        # Check whether the number of names in the result is more than the minimum expected
         self.assertTrue(len(x.json()[u'scientificNames']) > 10)
+        # Check whether result is what it should be according to docs
         self.assertTrue(u'Papilio' in x.json()[u'scientificNames'])
     
 
@@ -73,27 +74,29 @@ class TestFnNamesText(webapp.WebappTestCase):
                self.assertTrue(x.status_code >= 400)
 
    
-    def test_example_4(self):
-        """Test example_4 from the documentation."""
+    def test_example_1(self):
+        """Test example_1 from the documentation."""
 
-        x = self.start_request_tests(example_4)
+        x = self.start_request_tests(example_1)
         self.assert_success(x)
         self.assertTrue(len(x.json()[u'scientificNames']) >= 2)
         self.assertTrue(u'Columbidae' in x.json()[u'scientificNames'])
 
 
-    def test_example_5(self):
-        """Test example_5 from the documentation."""
-        x = self.start_request_tests(example_5)
+    def test_example_2(self):
+        """Test example_2 from the documentation."""
+        x = self.start_request_tests(example_2)
         self.assert_success(x)
+        # Check whether the number of names in the result is more than the minimum expected
         self.assertTrue(len(x.json()[u'scientificNames']) >= 5)
+        # Check whether result is what it should be according to docs
         self.assertTrue(u'Formica polyctena' in x.json()[u'scientificNames'])
 
 
 null=None; false=False; true=True
 
-example_5 = service.get_request('GET', {u'text': u'Formica polyctena is a species of European red wood ant in the genus Formica. The pavement ant, Tetramorium caespitum is an ant native to Europe. Pseudomyrmex is a genus of stinging, wasp-like ants. Adetomyrma venatrix is an endangered species of ants endemic to Madagascar. Carebara diversa is a species of ants in the subfamily Formicinae. It is found in many Asian countries.'})
-example_4 = service.get_request('GET', {u'engine': u'2', u'text': u'The lemon dove (Columba larvata) is a species of bird in the pigeon family Columbidae found in montane forests of sub-Saharan Africa.'})
+example_2 = service.get_request('GET', {u'text': u'Formica polyctena is a species of European red wood ant in the genus Formica. The pavement ant, Tetramorium caespitum is an ant native to Europe. Pseudomyrmex is a genus of stinging, wasp-like ants. Adetomyrma venatrix is an endangered species of ants endemic to Madagascar. Carebara diversa is a species of ants in the subfamily Formicinae. It is found in many Asian countries.'})
+example_1 = service.get_request('GET', {u'engine': u'2', u'text': u'The lemon dove (Columba larvata) is a species of bird in the pigeon family Columbidae found in montane forests of sub-Saharan Africa.'})
 
 if __name__ == '__main__':
     print >>sys.stdout, '\n=================GNRD_wrapper_text=========================' 
